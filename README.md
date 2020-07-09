@@ -1,4 +1,4 @@
-# Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces
+# Impact of viral protein sequence variants on protein domains and interfaces
 
 ## Tool to evaluate impact of a mutation
 * Come up with a simple SNPs variants mutations structural analysis

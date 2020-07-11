@@ -9,6 +9,8 @@
     * Use coevolving mutations to evolve an interface given a change from one species to another or  a species polymorphism on one protein, adapting its partner
       * Application between bat/pangolin.civet/human in the couple ACE2/SARS-CoV
 ### Scope of the study
+
 * To predict the effect of point mutations on 3D protein structure
 * To identify hotspot mutation region by clustering mutations
+
 #### Mewtate Workflow

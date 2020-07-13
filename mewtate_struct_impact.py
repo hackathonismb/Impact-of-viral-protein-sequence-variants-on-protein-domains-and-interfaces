@@ -96,13 +96,13 @@ class mewtate_struct_impact():
        Dependencies: BioPython, DSSP exe"""
 
 
-    def __init__( PDB, mutation, default_dir="path/to/PDBdir/" ): # mutation example: NE479K, where E is the PDB chain
+    def __init__( self, pdb, mutation, default_dir="path/to/pdbdir/" ): # mutation example: NE479K, where E is the pdb chain
 
-        # retrieve PDB if required
+        # retrieve pdb if required
 
-        s = PDBParser( QUIET=True ).get_structure( PDB, default_dir+PDB+".pdb" )
+        s = PDBParser( QUIET=True ).get_structure( pdb, default_dir+pdb+".pdb" )
 
-        self.PDB = PDB
+        self.pdb = pdb
         self.default_dir = default_dir
 
         self.pdb_WT = s[0] # WT model (from SMCRA)
@@ -111,8 +111,8 @@ class mewtate_struct_impact():
 
         self.target   = r
         self.mutation = mutation
-        dssp_WT  = DSSP( self.pdb_WT, default_dir+PDB+".pdb", dssp="path/to/dssp.exe" )
-        self.ss_WT, self.rsa_WT = dssp_WT( self.mutation[1], self.target.get_id() )][2], dssp_WT( self.mutation[1], self.target.get_id() )][3]
+        dssp_WT  = DSSP( self.pdb_WT, default_dir+pdb+".pdb", dssp="C:/Users/Sherlyn/Downloads/dssp-2.0.4-win32.exe" )
+        self.ss_WT, self.rsa_WT = dssp_WT[( self.mutation[1], self.target.get_id() )][2], dssp_WT[( self.mutation[1], self.target.get_id() )][3]
 
         if mutation[0] != olc[ r.get_resname() ]:
             return "Given mutation does not match structure information" # or False??
@@ -120,18 +120,18 @@ class mewtate_struct_impact():
 
         else:
         
-            # To discuss: generate MUTANT PDB using FoldX here or generate it outside this module and give the filename?
-            # I'm assuming a MUT file has been generated (e.g. $PDB + "_" + $mutation + ".pdb" )
+            # To discuss: generate MUTANT pdb using FoldX here or generate it outside this module and give the filename?
+            # I'm assuming a MUT file has been generated (e.g. $pdb + "_" + $mutation + ".pdb" )
 
-            s = PDBParser( QUIET=True ).get_structure( PDB, default_dir+PDB+"_"+mutation+".pdb" )
+            s = PDBParser( QUIET=True ).get_structure( pdb, default_dir+pdb+"_"+mutation+".pdb" )
 
             self.pdb_MUT = s[0] # MUT model
             c = self.pdb_MUT[ mutation[1] ]
             r = c[ int( mutation[2:-1] ) ]
 
             self.mutres = r
-            dssp_MUT  = DSSP( self.pdb_MUT, default_dir+PDB+"_"+mutation+".pdb", dssp="path/to/dssp.exe" )
-            self.ss_MUT, self.rsa_MUT = dssp_MUT( self.mutation[1], self.mutres.get_id() )][2], dssp_MUT( self.mutation[1], self.mutres.get_id() )][3]
+            dssp_MUT  = DSSP( self.pdb_MUT, default_dir+pdb+"_"+mutation+".pdb", dssp="C:/Users/Sherlyn/Downloads/dssp-2.0.4-win32.exe" )
+            self.ss_MUT, self.rsa_MUT = dssp_MUT[( self.mutation[1], self.mutres.get_id() )][2], dssp_MUT[( self.mutation[1], self.mutres.get_id() )][3]
 
 
             ## Steps to assess structural impact to be finalized here
@@ -149,14 +149,13 @@ class mewtate_struct_impact():
                        mewtate_struct_impact.buried_hydrophilic_introduced( self ) ]
             
             ## Generate Text report (for now)
-            print( "%s: %s"%(self.PDB,self.mutation) )
+            print( "%s: %s"%(self.pdb,self.mutation) )
             if any( [x!=False for x in output] ):
                 print( "Possibly damaging mutation: ")
                 for x in output:
                     if x != False:
                         print( x )
                 
-
 
     def disulfide_breakage( self ):      
         if self.mutation[0] == 'C':
@@ -247,10 +246,7 @@ class mewtate_struct_impact():
 
     ## UTILITIES
 
-    def retrievePDB( self ):
-        response = requests.get( "https://files.rcsb.org/download/" + self.PDB + ".pdb" )
-        with open( self.default_dir + self.PDB + '.pdb', 'w' ) as q:
+    def retrievepdb( self ):
+        response = requests.get( "https://files.rcsb.org/download/" + self.pdb + ".pdb" )
+        with open( self.default_dir + self.pdb + '.pdb', 'w' ) as q:
             q.write( response.text )
-
-
-        

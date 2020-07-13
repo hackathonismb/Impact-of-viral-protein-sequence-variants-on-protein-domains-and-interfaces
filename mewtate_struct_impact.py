@@ -23,78 +23,19 @@ residue_max_acc = {
     # Wilke: Tien et al. 2013 https://doi.org/10.1371/journal.pone.0080635 
     # Sander: Sander & Rost 1994 https://doi.org/10.1002/prot.340200303 
     "Miller": { 
-        "ALA": 113.0, 
-        "ARG": 241.0, 
-        "ASN": 158.0, 
-        "ASP": 151.0, 
-        "CYS": 140.0, 
-        "GLN": 189.0, 
-        "GLU": 183.0, 
-        "GLY": 85.0, 
-        "HIS": 194.0, 
-        "ILE": 182.0, 
-        "LEU": 180.0, 
-        "LYS": 211.0, 
-        "MET": 204.0, 
-        "PHE": 218.0, 
-        "PRO": 143.0, 
-        "SER": 122.0, 
-        "THR": 146.0, 
-        "TRP": 259.0, 
-        "TYR": 229.0, 
-        "VAL": 160.0, 
-    }, 
+        "ALA": 113.0, "ARG": 241.0, "ASN": 158.0, "ASP": 151.0, "CYS": 140.0, "GLN": 189.0, "GLU": 183.0, "GLY": 85.0, "HIS": 194.0, "ILE": 182.0, 
+        "LEU": 180.0, "LYS": 211.0, "MET": 204.0, "PHE": 218.0, "PRO": 143.0, "SER": 122.0, "THR": 146.0, "TRP": 259.0, "TYR": 229.0, "VAL": 160.0,     },     
     "Wilke": { 
-        "ALA": 129.0, 
-        "ARG": 274.0, 
-        "ASN": 195.0, 
-        "ASP": 193.0, 
-        "CYS": 167.0, 
-        "GLN": 225.0, 
-        "GLU": 223.0, 
-        "GLY": 104.0, 
-        "HIS": 224.0, 
-        "ILE": 197.0, 
-        "LEU": 201.0, 
-        "LYS": 236.0, 
-        "MET": 224.0, 
-        "PHE": 240.0, 
-        "PRO": 159.0, 
-        "SER": 155.0, 
-        "THR": 172.0, 
-        "TRP": 285.0, 
-        "TYR": 263.0, 
-        "VAL": 174.0, 
-    }, 
+        "ALA": 129.0, "ARG": 274.0, "ASN": 195.0, "ASP": 193.0, "CYS": 167.0, "GLN": 225.0, "GLU": 223.0, "GLY": 104.0, "HIS": 224.0, "ILE": 197.0,
+        "LEU": 201.0, "LYS": 236.0, "MET": 224.0, "PHE": 240.0, "PRO": 159.0, "SER": 155.0, "THR": 172.0, "TRP": 285.0, "TYR": 263.0, "VAL": 174.0,     }, 
     "Sander": { 
-        "ALA": 106.0, 
-        "ARG": 248.0, 
-        "ASN": 157.0, 
-        "ASP": 163.0, 
-        "CYS": 135.0, 
-        "GLN": 198.0, 
-        "GLU": 194.0, 
-        "GLY": 84.0, 
-        "HIS": 184.0, 
-        "ILE": 169.0, 
-        "LEU": 164.0, 
-        "LYS": 205.0, 
-        "MET": 188.0, 
-        "PHE": 197.0, 
-        "PRO": 136.0, 
-        "SER": 130.0, 
-        "THR": 142.0, 
-        "TRP": 227.0, 
-        "TYR": 222.0, 
-        "VAL": 142.0, 
-    }, 
+        "ALA": 106.0, "ARG": 248.0, "ASN": 157.0, "ASP": 163.0, "CYS": 135.0, "GLN": 198.0, "GLU": 194.0, "GLY": 84.0, "HIS": 184.0, "ILE": 169.0,
+        "LEU": 164.0, "LYS": 205.0, "MET": 188.0, "PHE": 197.0, "PRO": 136.0, "SER": 130.0, "THR": 142.0, "TRP": 227.0, "TYR": 222.0, "VAL": 142.0,     }, 
 } 
 
 class mewtate_struct_impact():
 
-    """Methods to assess structural impact of the mutation.
-       Dependencies: BioPython, DSSP exe"""
-
+    """Methods to assess structural impact of the mutation."""
 
     def __init__( self, pdb, mutation, default_dir="path/to/pdbdir/" ): # mutation example: NE479K, where E is the pdb chain
 
@@ -151,10 +92,10 @@ class mewtate_struct_impact():
             ## Generate Text report (for now)
             print( "%s: %s"%(self.pdb,self.mutation) )
             if any( [x!=False for x in output] ):
-                print( "Possibly damaging mutation: ")
+                print( "Possibly damaging mutation:", end=" ")
                 for x in output:
                     if x != False:
-                        print( x )
+                        print( x+";", end=" " )
                 
 
     def disulfide_breakage( self ):      

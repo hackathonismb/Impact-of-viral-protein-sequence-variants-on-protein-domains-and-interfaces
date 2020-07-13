@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
 } from "@material-ui/core";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +23,11 @@ const SearchInput = ({ onSearchInputSubmit }) => {
   const [position, setPosition] = useState(0);
   const [variant, setVariant] = useState("");
 
+  const history = useHistory();
+
   const onSubmit = (e) => {
     e.preventDefault();
-    onSearchInputSubmit(protein, position, variant);
+    history.push(`/${protein}/${position}/${variant}`);
   };
 
   const classes = useStyles();

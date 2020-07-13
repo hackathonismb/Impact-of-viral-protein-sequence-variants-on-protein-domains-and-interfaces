@@ -8,7 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import useApi from "../hooks/UseApi";
 
-const FunctionalInfo = ({ protein, position, variant }) => {
+const FunctionalInfo = ({ protein, position }) => {
   const { data, isLoading, isError } = useApi(
     `https://www.ebi.ac.uk/proteins/api/features/${protein}?format=json`
   );

@@ -123,14 +123,14 @@ class mewtate_struct_impact():
         
 
     def buried_hydrophilic_introduced( self ):
-        if self.mutation[0] in hydrophobic and  self.mutation[1] in hydrophilic and self.rsa_WT < 0.09:
+        if self.mutation[0] in hydrophobic and self.mutation[-1] in hydrophilic and self.rsa_WT < 0.09:
             return "Buried hydrophilic %s introduced"%self.mutres.get_resname() #OR True
         else:
             return False
 
 
     def buried_charge_introduced( self ):
-        if self.mutation[0] not in positive+negative and  self.mutation[1] in positive+negative and self.rsa_WT < 0.09:
+        if self.mutation[0] not in positive+negative and self.mutation[-1] in positive+negative and self.rsa_WT < 0.09:
             return "Buried charge %s introduced"%self.mutres.get_resname() #OR True
         else:
             return False
@@ -138,9 +138,9 @@ class mewtate_struct_impact():
 
     def buried_charge_switch( self ):
         if self.rsa_WT < 0.09:
-            if self.mutation[0] in positive and  self.mutation[1] in negative:
+            if self.mutation[0] in positive and  self.mutation[-1] in negative:
                 return "Charge switch from positive to negative" #OR True
-            elif self.mutation[0] in negative and  self.mutation[1] in positive:
+            elif self.mutation[0] in negative and  self.mutation[-1] in positive:
                 return "Charge switch from negative to positive" #OR True
             else:
                 return False
@@ -156,7 +156,7 @@ class mewtate_struct_impact():
 
 
     def buried_charge_replaced( self ):
-        if self.mutation[0] in positive+negative and  self.mutation[1] not in positive+negative and self.rsa_WT < 0.09:
+        if self.mutation[0] in positive+negative and self.mutation[-1] not in positive+negative and self.rsa_WT < 0.09:
             return "Buried charge %s replaced"%self.target.get_resname() #OR True
         else:
             return False
@@ -179,7 +179,7 @@ class mewtate_struct_impact():
 
 
     def buried_hydrophilic_introduced( self ):
-        if self.mutation[0] in hydrophilic and  self.mutation[1] in hydrophobic and self.rsa_WT > 0.09:
+        if self.mutation[0] in hydrophilic and  self.mutation[-1] in hydrophobic and self.rsa_WT > 0.09:
             return "Buried hydrophilic %s introduced"%self.mutres.get_resname() #OR True
         else:
             return False

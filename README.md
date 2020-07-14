@@ -14,7 +14,7 @@
 Mewtate is a tool to predict the effect of single amino acid substitution (point mutation) on 3D protein structures. It also allows user to identify mutation hotspot regions by calculating statistically significant cluster of mutations on a 3D protein structure.
 
 ### Mewtate Workflow
-
+![client logo] https://github.com/hackathonismb/Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces/blob/master/docs/client.png
 ### How to use Mewtate?
 
 ### Validation

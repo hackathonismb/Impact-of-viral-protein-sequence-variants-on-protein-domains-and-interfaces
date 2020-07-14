@@ -1,0 +1,10 @@
+{"series1":	{ "mutation1": {"wt_residue":"T", "mut_residue": "K", "chain":"A", "position":"20"},
+		  "mutation2": {"wt_residue":"C", "mut_residue": "A", "chain":"B", "position":"361"},
+		  "mutation3": {"wt_residue":"K", "mut_residue": "T", "chain":"B", "position":"386"}
+		},
+
+{"series2":	{ "mutation1": {"wt_residue":"S", "mut_residue": "M", "chain":"B", "position":"366"},
+		  "mutation2": {"wt_residue":"C", "mut_residue": "A", "chain":"B", "position":"361"}
+		} 
+
+}

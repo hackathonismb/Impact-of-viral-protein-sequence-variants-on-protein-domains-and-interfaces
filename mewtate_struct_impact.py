@@ -4,6 +4,7 @@ import os
 from shutil import which 
 from sys import exit
 import glob
+import json
 
 # Missense3D paper: Ittisoponpisan et al. 2019 https://doi.org/10.1016/j.jmb.2019.04.009
 
@@ -92,15 +93,11 @@ class mewtate_struct_impact():
                        mewtate_struct_impact.buried_exposed_switch( self ),
                        mewtate_struct_impact.gly_bend( self ),
                        mewtate_struct_impact.buried_hydrophilic_introduced( self ) ]
-            
-            ## Generate Text report (for now)
-            print( "%s: %s"%(self.pdb,self.mutation) )
-            if any( [x!=False for x in output] ):
-                print( "Possibly damaging mutation:", end=" ")
-                for x in output:
-                    if x != False:
-                        print( x+";", end=" " )
-                
+        
+            ## Output -> json
+            output = [ x for x in output if x!=False ]
+            self.out = json.dumps( { 'pdb':self.pdb, 'mutation':self.mutation, 'foldx': 3.2, 'impact':output } )
+               
 
     def disulfide_breakage( self ):      
         if self.mutation[0] == 'C':

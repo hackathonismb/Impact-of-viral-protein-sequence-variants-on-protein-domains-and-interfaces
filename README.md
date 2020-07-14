@@ -1,3 +1,4 @@
+![Mewtate logo](https://github.com/hackathonismb/Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces/blob/master/mewtate-client/src/mewtate-logo.svg)
 # Mewtate - Impact of viral protein sequence variants on protein domains and interfaces
 
 ## Tool to evaluate impact of a mutation

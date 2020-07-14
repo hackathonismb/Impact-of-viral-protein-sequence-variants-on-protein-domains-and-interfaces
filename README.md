@@ -16,12 +16,9 @@ Mewtate is a tool to predict the effect of single amino acid substitution (point
 ### Mewtate Workflow
 
 ### How to use Mewtate?
-#### Input file
-
-#### Output
 
 ### Validation
+We have used receptor-binding domain (RBD) of the spike protein of SARS-CoV-2 to validate our results. We would extend our study other viral 3D protein structures.
 
 ### References
 
-### Team

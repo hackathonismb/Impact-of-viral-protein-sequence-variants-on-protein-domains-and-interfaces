@@ -14,9 +14,9 @@
 Mewtate is a tool to predict the effect of single amino acid substitution (point mutation) on 3D protein structures. It also allows user to identify mutation hotspot regions by calculating statistically significant cluster of mutations on a 3D protein structure.
 
 ### Mewtate Workflow
-![client logo](https://github.com/hackathonismb/Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces/blob/master/docs/client.png)
-### How to use Mewtate?
 
+### How to use Mewtate?
+![client logo](https://github.com/hackathonismb/Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces/blob/master/docs/client.png)
 ### Validation
 We have used receptor-binding domain (RBD) of the spike protein of SARS-CoV-2 to validate our results. We would extend our study other viral 3D protein structures.
 

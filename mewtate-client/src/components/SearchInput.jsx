@@ -6,6 +6,8 @@ import {
   Container,
   Card,
   CardContent,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import { useHistory } from "react-router";
 
@@ -19,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SearchInput = ({ onSearchInputSubmit }) => {
-  const [protein, setProtein] = useState("");
+  const [protein] = useState("P0DTC2");
   const [position, setPosition] = useState(0);
   const [variant, setVariant] = useState("");
 
@@ -41,11 +43,13 @@ const SearchInput = ({ onSearchInputSubmit }) => {
             className={classes.root}
             onSubmit={(e) => onSubmit(e)}
           >
-            <TextField
-              label="Protein"
-              value={protein}
-              onChange={(e) => setProtein(e.target.value)}
-            />
+            <TextField label="Protein" value={protein} />
+            {/* <Select label="Structure">
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+            </Select> */}
             <TextField
               label="Position"
               type="number"

@@ -1,5 +1,9 @@
 from Bio.PDB import *
 import requests
+import os
+from shutil import which 
+from sys import exit
+import glob
 
 # Missense3D paper: Ittisoponpisan et al. 2019 https://doi.org/10.1016/j.jmb.2019.04.009
 
@@ -52,7 +56,7 @@ class mewtate_struct_impact():
 
         self.target   = r
         self.mutation = mutation
-        dssp_WT  = DSSP( self.pdb_WT, default_dir+pdb+".pdb", dssp="C:/Users/Sherlyn/Downloads/dssp-2.0.4-win32.exe" )
+        dssp_WT  = DSSP( self.pdb_WT, default_dir+pdb+".pdb", dssp="/home/houcemeddine/modules/dssp/bin/dssp-2.0.4-linux-i386" )
         self.ss_WT, self.rsa_WT = dssp_WT[( self.mutation[1], self.target.get_id() )][2], dssp_WT[( self.mutation[1], self.target.get_id() )][3]
 
         if mutation[0] != olc[ r.get_resname() ]:
@@ -64,7 +68,7 @@ class mewtate_struct_impact():
             # To discuss: generate MUTANT pdb using FoldX here or generate it outside this module and give the filename?
             # I'm assuming a MUT file has been generated (e.g. $pdb + "_" + $mutation + ".pdb" )
 
-            s = PDBParser( QUIET=True ).get_structure( pdb, default_dir+pdb+"_"+mutation+".pdb" )
+            s = PDBParser( QUIET=True ).get_structure( pdb, default_dir+"/"+pdb+"_"+mutation+".pdb" )
 
             self.pdb_MUT = s[0] # MUT model
             c = self.pdb_MUT[ mutation[1] ]
@@ -191,3 +195,51 @@ class mewtate_struct_impact():
         response = requests.get( "https://files.rcsb.org/download/" + self.pdb + ".pdb" )
         with open( self.default_dir + self.pdb + '.pdb', 'w' ) as q:
             q.write( response.text )
+
+
+class FoldX:
+    """docstring for FoldX"""
+    def __init__(self, pdb):
+        if os.path.exists(pdb) : 
+            self.pdb = pdb
+        else: 
+            raise FileNotFoundError("File does not exist")
+    
+    def repair(self, override=True): 
+        """
+        if override = False it will try to find
+            a repaired pdb structure with suffix "_Repair.pdb"
+        else it will run a repair process by foldx
+        """
+        self.container_folder = os.path.dirname(os.path.abspath(self.pdb)) 
+        self.basename = os.path.basename(self.pdb)
+        if override :     
+            if which("foldx") == None:
+                exit("'foldx' not in PATH")
+            # run foldx o repair the structure 
+            cmd="cd {0} ; foldx --command=RepairPDB --pdb={1}".format(self.container_folder, self.basename)
+            print(cmd)
+            #os.system(cmd)
+        else: 
+            repaired_pdb = os.path.splitext(self.basename)[0]+"_Repair.pdb"
+            if os.path.exists(self.container_folder+"/"+repaired_pdb) : 
+                self.path_to_repaired_wt_structure = self.container_folder+"/"+repaired_pdb
+                print("Repaired structure in {}".format(self.path_to_repaired_wt_structure))
+            else: 
+                raise OSError("{0} have no repaired structure ('*_Repair.pdb')  in {1}".format(self.basename, self.container_folder))
+
+                
+
+
+
+
+
+
+
+
+myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb")
+myfoldx.repair(override=False)
+
+#pdb = mewtate_struct_impact("RBD_SARS-CoV-2-hACE2.pdb", "TA20K", default_dir="./example")
+
+        

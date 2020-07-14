@@ -216,10 +216,10 @@ class FoldX:
         if override :     
             if which("foldx") == None:
                 exit("'foldx' not in PATH")
-            # run foldx o repair the structure 
+            # run foldx o repair the structure. For some reason foldx does not recognise a path to dir
             cmd="cd {0} ; foldx --command=RepairPDB --pdb={1}".format(self.container_folder, self.basename)
             print(cmd)
-            #os.system(cmd)
+            os.system(cmd)
         else: 
             repaired_pdb = os.path.splitext(self.basename)[0]+"_Repair.pdb"
             if os.path.exists(self.container_folder+"/"+repaired_pdb) : 
@@ -228,7 +228,22 @@ class FoldX:
             else: 
                 raise OSError("{0} have no repaired structure ('*_Repair.pdb')  in {1}".format(self.basename, self.container_folder))
 
-                
+    def mutate(self, wt_res, mut_res, position, chain, mode = "single"):
+        """
+        mutate structre 
+        """
+        cmd = "cd {0} ; foldx --command=BuildModel --pdb={1} --mutant-file=individual_list_single.txt".format(self.container_folder, self.basename)
+        if mode == 'single':
+            # write the mutation individual file used by foldX
+            expression_mut = wt_res+chain+str(position)+mut_res+';\n'
+            with open(self.container_folder+"/"+"individual_list_single.txt", 'w') as mutant_file : 
+                mutant_file.write(expression_mut)
+                # run the calculation of the folding energy
+                os.system(cmd)
+        if mode = 'batch':
+            pass
+
+        
 
 
 
@@ -239,6 +254,7 @@ class FoldX:
 
 myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb")
 myfoldx.repair(override=False)
+myfoldx.mutate(wt_res='T', mut_res='K', position=20, chain='A')
 
 #pdb = mewtate_struct_impact("RBD_SARS-CoV-2-hACE2.pdb", "TA20K", default_dir="./example")
 

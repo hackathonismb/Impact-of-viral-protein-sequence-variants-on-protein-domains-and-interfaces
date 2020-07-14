@@ -10,12 +10,14 @@
       * Application between bat/pangolin.civet/human in the couple ACE2/SARS-CoV
 ### What does Mewtate do?
 
-* To predict the effect of point mutations on 3D protein structure
-* To identify hotspot mutation region by clustering mutations
+Mewtate is a tool to predict the effect of single amino acid substitution (point mutation) on 3D protein structures. It also allows user to identify mutation hotspot regions by calculating statistically significant cluster of mutations on a 3D protein structure.
 
 ### Mewtate Workflow
 
 ### How to use Mewtate?
+#### Input file
+
+#### Output
 
 ### Validation
 

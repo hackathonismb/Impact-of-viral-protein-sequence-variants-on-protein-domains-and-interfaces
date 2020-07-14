@@ -11,5 +11,4 @@
 ### Scope of the study
 * To predict the effect of point mutations on 3D protein structure
 * To identify hotspot mutation region by clustering mutations
-
 #### Mewtate Workflow

@@ -1,6 +1,6 @@
 ![Mewtate logo](https://github.com/hackathonismb/Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces/blob/master/mewtate-client/src/mewtate-logo.svg)
 # Mewtate - Impact of viral protein sequence variants on protein domains and interfaces
-
+### Project Contributors: Houcemeddine Othman, Sachendra Kumar, Sherlyn Jemimah, Philippe Youkharibache, Xavier Watkins 
 ## Tool to evaluate impact of a mutation
 * Come up with a simple SNPs variants mutations structural analysis
 

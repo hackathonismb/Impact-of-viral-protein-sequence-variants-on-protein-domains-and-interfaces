@@ -237,7 +237,7 @@ class FoldX:
                 mutant_file.write(expression_mut)
                 # run the calculation of the folding energy
                 os.system(cmd)
-        if mode = 'batch':
+        if mode == 'batch':
             pass
 
         

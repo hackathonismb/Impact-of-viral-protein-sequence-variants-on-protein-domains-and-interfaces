@@ -17,11 +17,14 @@ Mewtate is a tool to predict the effect of single amino acid substitution (point
 ### Mewtate Workflow
 ![data logo](https://github.com/hackathonismb/Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces/blob/master/docs/data.png)
 ### How to use Mewtate?
+Mewatate assess structural changes such as disulfide breakage, seconday structure change, and many more structural features upon point mutation in a protein structure. This tools also calculate the change free energy due point mutation and its effect on interaction between protein complexes using FoldX. In addition, user can identify mutation hotspot region by calculating internal distribution of mutations for structurally important region compared with other regions of same proteins using statistical approach. Mewtate allows user to prioritize mutations for experimental validation.  
 ![client logo](https://github.com/hackathonismb/Impact-of-viral-protein-sequence-variants-on-protein-domains-and-interfaces/blob/master/docs/client.png)
 ### Validation
-We have used receptor-binding domain (RBD) of the spike protein of SARS-CoV-2 to validate our results. We would extend our study other viral 3D protein structures.
+In our preliminary studies, we have used ACE2/SARS-CoV to validate our results. We would extend our study other 3D protein structures. We will add more features to improve the functionality of mewtate.
 
 ### References
 1. Ittisoponpisan et al. 2019 https://doi.org/10.1016/j.jmb.2019.04.009
 2. Miller max acc: Miller et al. 1987 https://doi.org/10.1016/0022-2836(87)90038-6
-3. Wilke: Tien et al. 2013 https://doi.org/10.1371/journal.pone.0080635 
+3. Wilke: Tien et al. 2013 https://doi.org/10.1371/journal.pone.0080635
+4. Eduard et al. 2014 https://doi.org/10.1093/bioinformatics/btu499
+5. FoldX : http://foldxsuite.crg.eu/

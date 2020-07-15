@@ -4,6 +4,7 @@ import os
 from shutil import which 
 from sys import exit
 import glob
+import json
 
 # Missense3D paper: Ittisoponpisan et al. 2019 https://doi.org/10.1016/j.jmb.2019.04.009
 
@@ -227,6 +228,23 @@ class FoldX:
                 print("Repaired structure in {}".format(self.path_to_repaired_wt_structure))
             else: 
                 raise OSError("{0} have no repaired structure ('*_Repair.pdb')  in {1}".format(self.basename, self.container_folder))
+    
+    def _jsonParse(self, json_file):
+        """
+        Parses json batch mutation file and return formated
+        format for foldx
+        """
+        with open(json_file, 'r') as json_data:
+            data = json.load(json_data)
+        batch = []
+        for series in data["batch"]:
+            series_list = []
+            for mutation in data["batch"][series]: 
+                mut = data["batch"][series][mutation]
+                series_list.append(mut["wt_residue"]+mut["chain"]+mut["position"]+mut["mut_residue"])
+            batch.append(series_list)
+        return batch
+
 
     def mutate(self, wt_res, mut_res, position, chain, mode = "single"):
         """
@@ -240,7 +258,7 @@ class FoldX:
                 mutant_file.write(expression_mut)
                 # run the calculation of the folding energy
                 os.system(cmd)
-        if mode = 'batch':
+        if mode == 'batch':
             pass
 
         
@@ -253,9 +271,10 @@ class FoldX:
 
 
 myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb")
-myfoldx.repair(override=False)
-myfoldx.mutate(wt_res='T', mut_res='K', position=20, chain='A')
-
+#myfoldx.repair(override=False)
+#myfoldx.mutate(wt_res='T', mut_res='K', position=20, chain='A')
+myfoldx._jsonParse("./example/batch_mutations.json")
 #pdb = mewtate_struct_impact("RBD_SARS-CoV-2-hACE2.pdb", "TA20K", default_dir="./example")
+
 
         

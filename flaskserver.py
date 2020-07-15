@@ -16,4 +16,4 @@ def mewtate( pdb, mutation):
     return data
 
 if __name__ == '__main__':
-    app.run(host= '34.86.5.194')
+    app.run()

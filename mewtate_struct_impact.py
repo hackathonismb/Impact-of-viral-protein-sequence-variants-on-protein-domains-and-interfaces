@@ -5,6 +5,7 @@ from shutil import which
 from sys import exit
 import glob
 import json
+import warnings
 
 # Missense3D paper: Ittisoponpisan et al. 2019 https://doi.org/10.1016/j.jmb.2019.04.009
 
@@ -261,19 +262,28 @@ class FoldX:
         if mode == 'batch':
             pass
 
-        
+class PdbRead:
+    def __init__(self,pdb):
+        parser = PDBParser( QUIET=True )
+        self.structure = parser.get_structure('S',pdb )
+  
+    def extractChain(self, chain, output): 
+        if len(self.structure) >1: 
+            raise warnings.warn("Multiple models in PDB, will use only the first")
+        self.structure = self.structure[0]  # this is the first model of the PDB
+        s = self.structure[chain]
+        io = PDBIO()
+        io.set_structure(s)
+        io.save( output )
 
 
+my_structure = PdbRead("./example/RBD_SARS-CoV-2-hACE2.pdb")
+my_structure.extractChain("A", "chainA.pdb")
 
-
-
-
-
-
-myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb")
+#myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb")
 #myfoldx.repair(override=False)
 #myfoldx.mutate(wt_res='T', mut_res='K', position=20, chain='A')
-myfoldx._jsonParse("./example/batch_mutations.json")
+#myfoldx._jsonParse("./example/batch_mutations.json")
 #pdb = mewtate_struct_impact("RBD_SARS-CoV-2-hACE2.pdb", "TA20K", default_dir="./example")
 
 

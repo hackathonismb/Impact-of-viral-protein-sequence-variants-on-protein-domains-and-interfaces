@@ -1,0 +1,72 @@
+[
+  {
+    "accession": "P0DTC1",
+    "name": "R1A_SARS2",
+    "proteinName": "Replicase polyprotein 1a"
+  },
+  {
+    "accession": "P0DTC2",
+    "name": "SPIKE_SARS2",
+    "proteinName": "Spike glycoprotein"
+  },
+  {
+    "accession": "P0DTD1",
+    "name": "R1AB_SARS2",
+    "proteinName": "Replicase polyprotein 1ab"
+  },
+  {
+    "accession": "P0DTC3",
+    "name": "AP3A_SARS2",
+    "proteinName": "ORF3a protein"
+  },
+  {
+    "accession": "P0DTC5",
+    "name": "VME1_SARS2",
+    "proteinName": "Membrane protein"
+  },
+  {
+    "accession": "P0DTC7",
+    "name": "NS7A_SARS2",
+    "proteinName": "ORF7a protein"
+  },
+  {
+    "accession": "P0DTC9",
+    "name": "NCAP_SARS2",
+    "proteinName": "Nucleoprotein"
+  },
+  {
+    "accession": "P0DTC4",
+    "name": "VEMP_SARS2",
+    "proteinName": "Envelope small membrane protein"
+  },
+  {
+    "accession": "P0DTC6",
+    "name": "NS6_SARS2",
+    "proteinName": "ORF6 protein"
+  },
+  {
+    "accession": "P0DTD2",
+    "name": "ORF9B_SARS2",
+    "proteinName": "ORF9b protein"
+  },
+  {
+    "accession": "P0DTC8",
+    "name": "NS8_SARS2",
+    "proteinName": "ORF8 protein"
+  },
+  {
+    "accession": "P0DTD3",
+    "name": "Y14_SARS2",
+    "proteinName": "Uncharacterized protein 14"
+  },
+  {
+    "accession": "P0DTD8",
+    "name": "NS7B_SARS2",
+    "proteinName": "ORF7b protein"
+  },
+  {
+    "accession": "A0A663DJA2",
+    "name": "A0A663DJA2_SARS2",
+    "proteinName": "ORF10 protein"
+  }
+]

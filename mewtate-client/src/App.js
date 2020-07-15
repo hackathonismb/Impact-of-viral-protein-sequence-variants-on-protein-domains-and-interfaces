@@ -42,7 +42,7 @@ function App() {
             <SearchInput />
           </>
         </Route>
-        <Route path="/:protein/:position/:variant">
+        <Route path="/:protein/:pdb/:chain/:position/:variant">
           <VariantReport />
         </Route>
       </Switch>

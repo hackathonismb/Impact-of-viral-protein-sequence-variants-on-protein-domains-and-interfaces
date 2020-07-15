@@ -5,6 +5,8 @@ from shutil import which
 from sys import exit
 import glob
 import json
+import warnings
+import argparse
 
 # Missense3D paper: Ittisoponpisan et al. 2019 https://doi.org/10.1016/j.jmb.2019.04.009
 
@@ -224,6 +226,24 @@ class FoldX:
                 print("Repaired structure in {}".format(self.path_to_repaired_wt_structure))
             else: 
                 raise OSError("{0} have no repaired structure ('*_Repair.pdb')  in {1}".format(self.basename, self.container_folder))
+    
+    def _jsonParse(self, json_file):
+        """
+        Parses json batch mutation file and return formated
+        format for foldx
+        """
+        print(json_file)
+        with open(json_file, 'r') as json_data:
+            data = json.load(json_data)
+        batch = []
+        for series in data["batch"]:
+            series_list = []
+            for mutation in data["batch"][series]: 
+                mut = data["batch"][series][mutation]
+                series_list.append(mut["wt_residue"]+mut["chain"]+mut["position"]+mut["mut_residue"])
+            batch.append(series_list)
+        return batch
+
 
     def mutate(self, wt_res, mut_res, position, chain, mode = "single"):
         """
@@ -240,19 +260,36 @@ class FoldX:
         if mode == 'batch':
             pass
 
-        
+class PdbRead:
+    def __init__(self,pdb):
+        parser = PDBParser( QUIET=True )
+        self.structure = parser.get_structure('S',pdb )
+  
+    def extractChain(self, chain, output): 
+        if len(self.structure) >1: 
+            raise warnings.warn("Multiple models in PDB, will use only the first")
+        self.structure = self.structure[0]  # this is the first model of the PDB
+        s = self.structure[chain]
+        io = PDBIO()
+        io.set_structure(s)
+        io.save( output )
 
 
+#my_structure = PdbRead("./example/RBD_SARS-CoV-2-hACE2.pdb")
+#my_structure.extractChain("A", "chainA.pdb")
 
-
-
-
-
-
-myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb")
-myfoldx.repair(override=False)
-myfoldx.mutate(wt_res='T', mut_res='K', position=20, chain='A')
-
+#myfoldx.mutate(wt_res='T', mut_res='K', position=20, chain='A')
+#myfoldx._jsonParse("./example/batch_mutations.json")
 #pdb = mewtate_struct_impact("RBD_SARS-CoV-2-hACE2.pdb", "TA20K", default_dir="./example")
 
-        
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=" Usage: ")
+    # add long and short argument
+    parser.add_argument("-pdb", help="variant file")
+    parser.add_argument("-json", help="Path to seq2chain")
+    parser.add_argument("-refine", help="1 if you want to repair a stucture")
+    args = parser.parse_args()
+
+    myfoldx = FoldX(args.pdb)
+    myfoldx.repair(override=True)

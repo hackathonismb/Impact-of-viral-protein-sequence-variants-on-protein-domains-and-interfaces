@@ -6,12 +6,17 @@ import SearchInput from "./components/SearchInput";
 import HeroHeader from "./components/HeroHeader";
 import VariantReport from "./components/VariantReport";
 
+import Logo from "./mewtate-logo.svg";
+
 const useStyles = makeStyles((theme) => ({
-  navBar: {
-    "& a": {
-      color: "#FFF",
-      textDecoration: "none",
-    },
+  root: {
+    flexGrow: 1,
+  },
+  logo: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
   },
 }));
 
@@ -20,10 +25,13 @@ function App() {
 
   return (
     <Router>
-      <AppBar position="static" className={classes.navBar}>
+      <AppBar position="static" className={classes.root}>
         <Toolbar>
-          <Typography variant="h5">
-            <Link to="/">Mewtate!</Link>
+          <Link to="/">
+            <img src={Logo} alt="logo" height="32" className={classes.logo} />
+          </Link>
+          <Typography variant="h5" className={classes.title}>
+            MEWTATE
           </Typography>
         </Toolbar>
       </AppBar>
@@ -34,7 +42,7 @@ function App() {
             <SearchInput />
           </>
         </Route>
-        <Route path="/:protein/:position/:variant">
+        <Route path="/:protein/:pdb/:chain/:position/:variant">
           <VariantReport />
         </Route>
       </Switch>

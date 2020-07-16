@@ -14,7 +14,7 @@ const FunctionalInfo = (positions) => {
   const { protein, position } = useParams();
 
   const getUniProtPosition = (pos) => pos + positions.positions.unp_start - 1;
-  const getPDBPosition = (pos) => pos - positions.positions.unp_start - 1;
+  const getPDBPosition = (pos) => pos - positions.positions.unp_start + 1;
 
   const { data, isLoading, isError } = useApi(
     `https://www.ebi.ac.uk/proteins/api/features/${protein}?format=json`

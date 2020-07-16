@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     color: theme.palette.text.primary,
   },
+  colouredText: {
+    color: "red",
+  },
 }));
 
 const VariantReport = () => {
@@ -44,8 +47,11 @@ const VariantReport = () => {
         <Grid item xs={12}>
           <Paper className={classes.paper}>
             <Typography variant="h4" gutterBottom>
-              {protein} {pdb} {chain} {position}
-              {variant}
+              Change <span className={classes.colouredText}>{variant}</span> at
+              position {position}{" "}
+              <small>
+                {pdb}:{chain} ({protein})
+              </small>
             </Typography>
           </Paper>
         </Grid>

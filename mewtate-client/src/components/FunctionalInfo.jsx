@@ -11,7 +11,7 @@ import { useParams } from "react-router";
 import { Typography } from "@material-ui/core";
 
 const FunctionalInfo = (positions) => {
-  const { protein, position } = useParams();
+  const { protein, chain, position } = useParams();
 
   const getUniProtPosition = (pos) => pos + positions.positions.unp_start - 1;
   const getPDBPosition = (pos) => pos - positions.positions.unp_start + 1;
@@ -43,7 +43,7 @@ const FunctionalInfo = (positions) => {
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Chain positions</TableCell>
+              <TableCell>Chain {chain} positions</TableCell>
               <TableCell>Sequence position</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Description</TableCell>

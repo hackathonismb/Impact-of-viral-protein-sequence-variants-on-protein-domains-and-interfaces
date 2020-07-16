@@ -202,34 +202,48 @@ class mewtate_struct_impact():
 
 class FoldX:
     """docstring for FoldX"""
-    def __init__(self, pdb):
+    def __init__(self, pdb, wt_res, mut_res, position, chain, mode = "single" ):
         if os.path.exists(pdb) : 
             self.pdb = pdb
+            self.container_folder = os.path.dirname(os.path.abspath(self.pdb))
+            self.basename = os.path.basename(self.pdb)
+            self.wt_res = wt_res
+            self.mut_res = mut_res
+            self.position = position
+            self.chain = chain
+            self.mode = mode
+
         else: 
             raise FileNotFoundError("File does not exist")
+        repaired_pdb = os.path.splitext(self.basename)[0]+"_Repair.pdb"
+
+        # check  if the repaired structure exists in the working folder 
+        if os.path.exists(self.container_folder+"/"+repaired_pdb) : 
+            self.path_to_repaired_wt_structure = self.container_folder+"/"+repaired_pdb
+            print("Repaired structure in {}".format(self.path_to_repaired_wt_structure))
+            self.repaired_pdb = repaired_pdb
+        else:
+            self.repair()
+            self.path_to_repaired_wt_structure = self.container_folder+"/"+repaired_pdb
+            self.repaired_pdb = repaired_pdb
+
+        # mutating and calculating dG
+        self.mutate()
+
+
+
     
-    def repair(self, override=True): 
+    def repair(self): 
         """
-        if override = False it will try to find
-            a repaired pdb structure with suffix "_Repair.pdb"
-        else it will run a repair process by foldx
-        """
-        self.container_folder = os.path.dirname(os.path.abspath(self.pdb)) 
-        self.basename = os.path.basename(self.pdb)
-        if override :     
-            if which("foldx") == None:
-                exit("'foldx' not in PATH")
-            # run foldx o repair the structure. For some reason foldx does not recognise a path to dir
-            cmd="cd {0} ; foldx --command=RepairPDB --pdb={1}".format(self.container_folder, self.basename)
-            print(cmd)
-            os.system(cmd)
-        else: 
-            repaired_pdb = os.path.splitext(self.basename)[0]+"_Repair.pdb"
-            if os.path.exists(self.container_folder+"/"+repaired_pdb) : 
-                self.path_to_repaired_wt_structure = self.container_folder+"/"+repaired_pdb
-                print("Repaired structure in {}".format(self.path_to_repaired_wt_structure))
-            else: 
-                raise OSError("{0} have no repaired structure ('*_Repair.pdb')  in {1}".format(self.basename, self.container_folder))
+        Repair a pdb structure
+        """     
+        if which("foldx") == None:
+            exit("'foldx' not in PATH")
+        # run foldx o repair the structure. For some reason foldx does not recognise a path to dir
+        cmd="cd {0} ; foldx --command=RepairPDB --pdb={1}".format(self.container_folder, self.basename)
+        print(cmd)
+        os.system(cmd)
+
     
     def _jsonParse(self, json_file):
         """
@@ -249,19 +263,22 @@ class FoldX:
         return batch
 
 
-    def mutate(self, wt_res, mut_res, position, chain, mode = "single"):
+    def mutate(self):
         """
         mutate structre 
         """
-        cmd = "cd {0} ; foldx --command=BuildModel --pdb={1} --mutant-file=individual_list_single.txt".format(self.container_folder, self.basename)
-        if mode == 'single':
+        print(self.basename)
+        
+        if self.mode == 'single':
             # write the mutation individual file used by foldX
-            expression_mut = wt_res+chain+str(position)+mut_res+';\n'
-            with open(self.container_folder+"/"+"individual_list_single.txt", 'w') as mutant_file : 
+            expression_mut = self.wt_res+self.chain+str(self.position)+self.mut_res+';\n'
+            with open(self.container_folder+"/"+"individual_list.txt", 'w') as mutant_file : 
                 mutant_file.write(expression_mut)
-                # run the calculation of the folding energy
-                os.system(cmd)
-        if mode == 'batch':
+     
+            cmd_mut = "cd {0}; foldx --command=BuildModel --pdb={1} --mutant-file=individual_list.txt".format(self.container_folder, self.repaired_pdb)
+            # run the calculation of the folding energy
+            os.system(cmd_mut)
+        if self.mode == 'batch':
             pass
 
 class PdbRead:
@@ -287,15 +304,10 @@ class PdbRead:
 #pdb = mewtate_struct_impact("RBD_SARS-CoV-2-hACE2.pdb", "TA20K", default_dir="./example")
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=" Usage: ")
-    # add long and short argument
-    parser.add_argument("-pdb", help="variant file")
-    parser.add_argument("-json", help="Path to seq2chain")
-    parser.add_argument("-refine", help="1 if you want to repair a stucture")
-    args = parser.parse_args()
 
-    myfoldx = FoldX(args.pdb)
-    myfoldx.repair(override=True)
+myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb", "G", "T", "339", "B")
+
+
+
 
 

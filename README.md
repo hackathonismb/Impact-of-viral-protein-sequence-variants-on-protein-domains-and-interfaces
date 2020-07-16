@@ -22,7 +22,7 @@ Mewtate is a tool to predict the effect of single amino acid substitution (point
 
 ### Mewtate Workflow
 
-Mewatate assess structural changes such as disulfide breakage, seconday structure change, and many more structural features upon point mutation in a protein structure. This tools also calculate the change free energy due point mutation and its effect on interaction between protein complexes using FoldX. In addition, user can identify mutation hotspot region by calculating internal distribution of mutations for structurally important region compared with other regions of same proteins using statistical approach. Mewtate allows user to prioritize mutations for experimental validation.
+Mewatate assess structural changes such as disulfide breakage, seconday structure change, and many more structural features upon point mutation in a protein structure. This tools also calculate the change in free energy due to point mutation and its effect on interaction between protein complexes using FoldX. In addition, user can identify mutation hotspot region by calculating internal distribution of mutations for structurally important region compared with other regions of same proteins using statistical approach. Mewtate allows user to prioritize mutations for experimental validation.
 
 ### Application architecture
 

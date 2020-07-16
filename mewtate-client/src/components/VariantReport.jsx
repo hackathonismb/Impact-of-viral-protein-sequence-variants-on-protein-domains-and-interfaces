@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import { useParams } from "react-router";
 import PredictionInfo from "./PredictionInfo";
+import useApi from "../hooks/UseApi";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,6 +26,17 @@ const VariantReport = () => {
   const { protein, position, variant, pdb, chain } = useParams();
 
   const classes = useStyles();
+  const { data } = useApi(
+    `https://www.ebi.ac.uk/pdbe/api/mappings/best_structures/${protein}`
+  );
+
+  if (!data) {
+    return null;
+  }
+
+  const positions = Object.values(data)[0].find(
+    (item) => item.pdb_id === pdb && item.chain_id === chain
+  );
 
   return (
     <Container maxWidth="md" className={classes.root}>
@@ -39,7 +51,7 @@ const VariantReport = () => {
         </Grid>
         <Grid item xs={12}>
           <Paper className={classes.paper}>
-            <FunctionalInfo />
+            <FunctionalInfo positions={positions} />
           </Paper>
         </Grid>
         <Grid item xs={6}>

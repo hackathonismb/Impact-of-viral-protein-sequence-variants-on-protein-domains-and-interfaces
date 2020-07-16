@@ -1,5 +1,6 @@
 import React from "react";
 import { Select, MenuItem } from "@material-ui/core";
+import { v1 } from "uuid";
 import useApi from "../hooks/UseApi";
 
 const PDBInput = ({ accession, pdbId, setPdbId }) => {
@@ -11,16 +12,17 @@ const PDBInput = ({ accession, pdbId, setPdbId }) => {
     return <Select value={pdbId} disabled />;
   }
 
-  // const uniqueData = uniqBy(Object.values(data)[0], "pdb_id");
+  const handleSelect = (e) => {
+    const value = e.target.value;
+    setPdbId(e.target.value);
+  };
+
   console.log(data);
 
   return (
-    <Select value={pdbId} onChange={(e) => setPdbId(e.target.value)}>
+    <Select value={pdbId} onChange={(e) => handleSelect(e)}>
       {Object.values(data)[0].map((item) => (
-        <MenuItem
-          value={`${item.pdb_id}-${item.chain_id}`}
-          key={`${item.pdb_id}-${item.chain_id}`}
-        >
+        <MenuItem value={`${item.pdb_id}-${item.chain_id}`} key={v1()}>
           {`${item.pdb_id} Chain:${item.chain_id} (${item.unp_start}-${item.unp_end})`}
         </MenuItem>
       ))}

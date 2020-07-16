@@ -10,8 +10,11 @@ import useApi from "../hooks/UseApi";
 import { useParams } from "react-router";
 import { Typography } from "@material-ui/core";
 
-const FunctionalInfo = () => {
+const FunctionalInfo = (positions) => {
   const { protein, position } = useParams();
+
+  const getUniProtPosition = (pos) => pos + positions.positions.unp_start - 1;
+  const getPDBPosition = (pos) => pos - positions.positions.unp_start - 1;
 
   const { data, isLoading, isError } = useApi(
     `https://www.ebi.ac.uk/proteins/api/features/${protein}?format=json`
@@ -26,7 +29,9 @@ const FunctionalInfo = () => {
   }
 
   const filteredData = data.features.filter(
-    (feature) => feature.begin <= position && feature.end >= position
+    (feature) =>
+      feature.begin <= getUniProtPosition(position) &&
+      feature.end >= getUniProtPosition(position)
   );
 
   return (
@@ -38,7 +43,8 @@ const FunctionalInfo = () => {
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Position</TableCell>
+              <TableCell>Chain positions</TableCell>
+              <TableCell>Sequence position</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Evidence</TableCell>
@@ -47,6 +53,9 @@ const FunctionalInfo = () => {
           <TableBody>
             {filteredData.map((feature) => (
               <TableRow key={`${feature.begin}${feature.end}${feature.type}`}>
+                <TableCell>
+                  {getPDBPosition(feature.begin)}-{getPDBPosition(feature.end)}
+                </TableCell>
                 <TableCell>
                   {feature.begin}-{feature.end}
                 </TableCell>

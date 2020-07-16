@@ -6,7 +6,6 @@ from sys import exit
 import glob
 import json
 import warnings
-import argparse
 
 # Missense3D paper: Ittisoponpisan et al. 2019 https://doi.org/10.1016/j.jmb.2019.04.009
 
@@ -48,58 +47,64 @@ class mewtate_struct_impact():
 
         # retrieve pdb if required
 
-        s = PDBParser( QUIET=True ).get_structure( pdb, default_dir+pdb+".pdb" )
-
+        s = PDBParser( QUIET=True ).get_structure( "thestructure", pdb)
         self.pdb = pdb
         self.default_dir = default_dir
-
+        
         self.pdb_WT = s[0] # WT model (from SMCRA)
         c = self.pdb_WT[ mutation[1] ]
         r = c[ int( mutation[2:-1] ) ]
-
+        
         self.target   = r
         self.mutation = mutation
-        dssp_WT  = DSSP( self.pdb_WT, default_dir+pdb+".pdb", dssp="/home/houcemeddine/modules/dssp/bin/dssp-2.0.4-linux-i386" )
+        dssp_WT  = DSSP( self.pdb_WT, pdb, dssp="/home/houcemeddine/modules/dssp/bin/dssp-2.0.4-linux-i386" )
+
         self.ss_WT, self.rsa_WT = dssp_WT[( self.mutation[1], self.target.get_id() )][2], dssp_WT[( self.mutation[1], self.target.get_id() )][3]
+
 
         if mutation[0] != olc[ r.get_resname() ]:
             return "Given mutation does not match structure information" # or False??
             # validation: wt residue to match input mutation
 
         else:
-        
             # To discuss: generate MUTANT pdb using FoldX here or generate it outside this module and give the filename?
             # I'm assuming a MUT file has been generated (e.g. $pdb + "_" + $mutation + ".pdb" )
 
-            s = PDBParser( QUIET=True ).get_structure( pdb, default_dir+"/"+pdb+"_"+mutation+".pdb" )
+            path_to_mut_structure = os.path.dirname(os.path.abspath(pdb))+'/'+os.path.basename(pdb).replace('.pdb','_Repair_1.pdb')
 
+            s = PDBParser( QUIET=True ).get_structure( "mutant", path_to_mut_structure )
+        
             self.pdb_MUT = s[0] # MUT model
             c = self.pdb_MUT[ mutation[1] ]
             r = c[ int( mutation[2:-1] ) ]
 
             self.mutres = r
-            dssp_MUT  = DSSP( self.pdb_MUT, default_dir+pdb+"_"+mutation+".pdb", dssp="C:/Users/Sherlyn/Downloads/dssp-2.0.4-win32.exe" )
+            dssp_MUT  = DSSP( self.pdb_MUT, path_to_mut_structure, dssp="/home/houcemeddine/modules/dssp/bin/dssp-2.0.4-linux-i386" )
             self.ss_MUT, self.rsa_MUT = dssp_MUT[( self.mutation[1], self.mutres.get_id() )][2], dssp_MUT[( self.mutation[1], self.mutres.get_id() )][3]
-
 
             ## Steps to assess structural impact to be finalized here
 
-            output = [ mewtate_struct_impact.disulfide_breakage( self ),
-                       mewtate_struct_impact.buried_Pro_introduced( self ),
-                       mewtate_struct_impact.buried_glycine_replaced( self ),
-                       mewtate_struct_impact.buried_hydrophilic_introduced( self ),
-                       mewtate_struct_impact.buried_charge_introduced( self ),
-                       mewtate_struct_impact.buried_charge_switch( self ),
-                       mewtate_struct_impact.sec_struct_change( self ),
-                       mewtate_struct_impact.buried_charge_replaced( self ),
-                       mewtate_struct_impact.buried_exposed_switch( self ),
-                       mewtate_struct_impact.gly_bend( self ),
-                       mewtate_struct_impact.buried_hydrophilic_introduced( self ) ]
-        
-            ## Output -> json
-            output = [ x for x in output if x!=False ]
-            self.out = json.dumps( { 'pdb':self.pdb, 'mutation':self.mutation, 'foldx': 3.2, 'impact':output } )
-               
+            output = { "disulfide_breakage":mewtate_struct_impact.disulfide_breakage( self ),
+                       "buried_Pro_introduced": mewtate_struct_impact.buried_Pro_introduced( self ),
+                       "buried_glycine_replaced": mewtate_struct_impact.buried_glycine_replaced( self ),
+                       "buried_hydrophilic_introduced": mewtate_struct_impact.buried_hydrophilic_introduced( self ),
+                       "buried_charge_introduced": mewtate_struct_impact.buried_charge_introduced( self ),
+                       "buried_charge_switch": mewtate_struct_impact.buried_charge_switch( self ),
+                       "sec_struct_change": mewtate_struct_impact.sec_struct_change( self ),
+                       "buried_charge_replaced": mewtate_struct_impact.buried_charge_replaced( self ),
+                       "buried_exposed_switch": mewtate_struct_impact.buried_exposed_switch( self ),
+                       "gly_bend": mewtate_struct_impact.gly_bend( self ),
+                       "buried_hydrophilic_introduced": mewtate_struct_impact.buried_hydrophilic_introduced( self ) }
+            
+            ## Generate Text report (for now)
+            print( "%s: %s"%(self.pdb,self.mutation) )
+            if any( [x!=False for x in output.values()] ):
+                print( "Possibly damaging mutation:", end=" ")
+                output["decision"] = "Possibly damaging mutation"
+                for x in output.values():
+                    if x != False:
+                        print( x+";", end=" " )
+        self.output = output 
 
     def disulfide_breakage( self ):      
         if self.mutation[0] == 'C':
@@ -198,34 +203,60 @@ class mewtate_struct_impact():
 
 class FoldX:
     """docstring for FoldX"""
-    def __init__(self, pdb):
+    def __init__(self, pdb, wt_res, mut_res, position, chain, mode = "single" ):
         if os.path.exists(pdb) : 
             self.pdb = pdb
+            self.container_folder = os.path.dirname(os.path.abspath(self.pdb))
+            self.basename = os.path.basename(self.pdb)
+            self.wt_res = wt_res
+            self.mut_res = mut_res
+            self.position = position
+            self.chain = chain
+            self.mode = mode
+
         else: 
             raise FileNotFoundError("File does not exist")
+        repaired_pdb = os.path.splitext(self.basename)[0]+"_Repair.pdb"
+
+        # check  if the repaired structure exists in the working folder 
+        if os.path.exists(self.container_folder+"/"+repaired_pdb) : 
+            self.path_to_repaired_wt_structure = self.container_folder+"/"+repaired_pdb
+            print("Repaired structure in {}".format(self.path_to_repaired_wt_structure))
+            self.repaired_pdb = repaired_pdb
+        else:
+            self.repair()
+            self.path_to_repaired_wt_structure = self.container_folder+"/"+repaired_pdb
+            self.repaired_pdb = repaired_pdb
+
+        # mutating and calculating dG        
+        self.mutate()
+        self.folding_energy = self.parseOutput()
+        print("Folding energy:      {} kcal/mol".format(self.folding_energy))
+        
+        # binding enery 
+        self.mut_structure = os.path.basename(pdb).replace('.pdb','_Repair_1.pdb')
+        be = self.bindingEnergy()
+        if be!= False: 
+            binding_energy = self.parseOutput(mode='binding')
+            self.wt_binding_energy = binding_energy[0]
+            self.mut_binding_energy = binding_energy[1]
+            print("Binding energy mutant WT:      {} kcal/mol".format(self.wt_binding_energy ))
+            print("Binding energy mutant mut:      {} kcal/mol".format(self.mut_binding_energy ))
+        elif be!= False:
+            self.wt_binding_energy = "Not applicable"
+            self.mut_binding_energy = "Not applicable"
+
     
-    def repair(self, override=True): 
+    def repair(self): 
         """
-        if override = False it will try to find
-            a repaired pdb structure with suffix "_Repair.pdb"
-        else it will run a repair process by foldx
-        """
-        self.container_folder = os.path.dirname(os.path.abspath(self.pdb)) 
-        self.basename = os.path.basename(self.pdb)
-        if override :     
-            if which("foldx") == None:
-                exit("'foldx' not in PATH")
-            # run foldx o repair the structure. For some reason foldx does not recognise a path to dir
-            cmd="cd {0} ; foldx --command=RepairPDB --pdb={1}".format(self.container_folder, self.basename)
-            print(cmd)
-            os.system(cmd)
-        else: 
-            repaired_pdb = os.path.splitext(self.basename)[0]+"_Repair.pdb"
-            if os.path.exists(self.container_folder+"/"+repaired_pdb) : 
-                self.path_to_repaired_wt_structure = self.container_folder+"/"+repaired_pdb
-                print("Repaired structure in {}".format(self.path_to_repaired_wt_structure))
-            else: 
-                raise OSError("{0} have no repaired structure ('*_Repair.pdb')  in {1}".format(self.basename, self.container_folder))
+        Repair a pdb structure
+        """     
+        if which("foldx") == None:
+            exit("'foldx' not in PATH")
+        # run foldx o repair the structure. For some reason foldx does not recognise a path to dir
+        cmd="cd {0} ; foldx --command=RepairPDB --pdb={1}".format(self.container_folder, self.basename)
+        os.system(cmd)
+
     
     def _jsonParse(self, json_file):
         """
@@ -245,20 +276,68 @@ class FoldX:
         return batch
 
 
-    def mutate(self, wt_res, mut_res, position, chain, mode = "single"):
+    def mutate(self):
         """
         mutate structre 
-        """
-        cmd = "cd {0} ; foldx --command=BuildModel --pdb={1} --mutant-file=individual_list_single.txt".format(self.container_folder, self.basename)
-        if mode == 'single':
+        """        
+        if self.mode == 'single':
             # write the mutation individual file used by foldX
-            expression_mut = wt_res+chain+str(position)+mut_res+';\n'
-            with open(self.container_folder+"/"+"individual_list_single.txt", 'w') as mutant_file : 
+            expression_mut = self.wt_res+self.chain+str(self.position)+self.mut_res+';\n'
+            with open(self.container_folder+"/"+"individual_list.txt", 'w') as mutant_file : 
                 mutant_file.write(expression_mut)
-                # run the calculation of the folding energy
-                os.system(cmd)
-        if mode == 'batch':
+     
+            cmd_mut = "cd {0}; foldx --command=BuildModel --pdb={1} --mutant-file=individual_list.txt >/dev/null".format(self.container_folder, self.repaired_pdb)
+            # run the calculation of the folding energy
+            os.system(cmd_mut)
+        if self.mode == 'batch':
             pass
+
+    def bindingEnergy(self): 
+        parser = PDBParser( QUIET=True )
+        structure = parser.get_structure('S',self.pdb )
+        if len(structure) >1: 
+            raise warnings.warn("Multiple models in PDB, will use only the first")
+        structure = structure[0]  # this is the first model of the PDB
+        if len(structure) >1 : # pdb file contains more than one chain 
+            cmd_binding_wt = "cd {0}; foldx --command=AnalyseComplex --pdb={1} --analyseComplexChains={2} >/dev/null".format(self.container_folder, self.repaired_pdb, self.chain)
+            os.system(cmd_binding_wt)
+            cmd_binding_mut = "cd {0}; foldx --command=AnalyseComplex --pdb={1} --analyseComplexChains={2} >/dev/null".format(self.container_folder, self.mut_structure, self.chain)
+            os.system(cmd_binding_mut)
+        else: 
+            return False
+
+
+    def parseOutput(self, mode="folding"): 
+        """
+        Parses foldx diff file and extract dG
+        """
+        # binding energy corresponds to index 1 (field 2)
+        if mode == "folding":
+            foldx_dif_file = "Dif_"+self.basename.replace(".pdb", "")+"_Repair.fxout"
+            field_index = 1
+            with open(self.container_folder+"/"+foldx_dif_file, 'r') as file: 
+                lines = file.readlines()
+            data = lines[-1].split()
+            total_energy = float(data[field_index])
+            return  total_energy
+        # binding energy corresponds to index 5 (field 6)
+        elif mode == "binding": 
+            foldx_dif_file = "Interaction_"+self.basename.replace(".pdb", "")+"_Repair_AC.fxout"
+            foldx_dif_file_mut = "Interaction_"+self.basename.replace(".pdb", "")+"_Repair_1_AC.fxout"
+            field_index = 5
+            if os.path.exists(self.container_folder+"/"+foldx_dif_file_mut) : 
+                with open(self.container_folder+"/"+foldx_dif_file_mut, 'r') as mut_files: 
+                    lines_mut = mut_files.readlines()
+                data_mut = lines_mut[-1].split()
+
+                with open(self.container_folder+"/"+foldx_dif_file, 'r') as file: 
+                    lines = file.readlines()
+                data = lines[-1].split()
+                binding_energy_wt = float(data[field_index])                
+                binding_energy_mut = float(data_mut[field_index])
+                binding_energy_wt = float(data[field_index])
+                print( binding_energy_wt, binding_energy_mut )
+                return binding_energy_wt, binding_energy_mut
 
 class PdbRead:
     def __init__(self,pdb):
@@ -275,21 +354,22 @@ class PdbRead:
         io.save( output )
 
 
-#my_structure = PdbRead("./example/RBD_SARS-CoV-2-hACE2.pdb")
-#my_structure.extractChain("A", "chainA.pdb")
-
-#myfoldx.mutate(wt_res='T', mut_res='K', position=20, chain='A')
-#myfoldx._jsonParse("./example/batch_mutations.json")
-#pdb = mewtate_struct_impact("RBD_SARS-CoV-2-hACE2.pdb", "TA20K", default_dir="./example")
+def joinMutations(wt_res, mut_res, position, chain):
+    return wt_res+chain+position+mut_res
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=" Usage: ")
-    # add long and short argument
-    parser.add_argument("-pdb", help="variant file")
-    parser.add_argument("-json", help="Path to seq2chain")
-    parser.add_argument("-refine", help="1 if you want to repair a stucture")
-    args = parser.parse_args()
+    par_list = ["Y", "K", "505", "B"]   # this would be the input, because it's not possible to  parse the for "YB505K" correctly
+    myfoldx = FoldX("./example/RBD_SARS-CoV-2-hACE2.pdb", par_list[0], par_list[1], par_list[2], par_list[3])
+    mutation =  joinMutations( par_list[0], par_list[1], par_list[2], par_list[3] ) 
+    mymutation = mewtate_struct_impact("./example/RBD_SARS-CoV-2-hACE2.pdb" , mutation, default_dir="./example/")
+    output = mymutation.output
+    output["dG_folding"] = myfoldx.folding_energy
+    output["dG_binding_wt"] = myfoldx.wt_binding_energy
+    output["dG_binding_mut"] = myfoldx.mut_binding_energy
+    with open('All_outputs.json', 'w') as fp:
+        json.dump(output, fp)
 
-    myfoldx = FoldX(args.pdb)
-    myfoldx.repair(override=True)
+
+
+
